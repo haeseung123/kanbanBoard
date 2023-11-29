@@ -1,5 +1,5 @@
 {
-    "name": "2_matdori_f",
+    "name": "kanbanBoard",
     "version": "0.0.1",
     "description": "",
     "author": "",
@@ -29,6 +29,7 @@
         "@nestjs/mapped-types": "*",
         "@nestjs/passport": "^10.0.2",
         "@nestjs/platform-express": "^9.0.0",
+        "@nestjs/swagger": "^7.1.16",
         "@nestjs/typeorm": "^10.0.0",
         "@types/jsonwebtoken": "^9.0.4",
         "bcryptjs": "^2.4.3",
