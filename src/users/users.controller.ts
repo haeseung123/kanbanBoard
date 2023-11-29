@@ -34,14 +34,14 @@ export class UsersController {
 	@Post('signup')
 	@ResponseMessage(UserResponseMessage.SIGN_UP)
 	async signUp(@Body() createUserDto: CreateUserDto) {
-		return this.usersService.createUser(createUserDto);
+		return await this.usersService.createUser(createUserDto);
 	}
 
 	@ApiOperation({ summary: '로그인' })
 	@Post('login')
 	@ResponseMessage(UserResponseMessage.LOG_IN)
 	async login(@Body() loginUserDto: LoginUserDto) {
-		return this.usersService.loginUser(loginUserDto);
+		return await this.usersService.loginUser(loginUserDto);
 	}
 
 	@ApiOperation({ summary: '로그아웃' })

@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from 'src/global/entities/base.entity';
+import { Team } from 'src/teams/entities/team.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -20,4 +21,8 @@ export class User extends BaseEntity {
 
 	@Column({ type: 'boolean', default: false })
 	is_leader: boolean;
+
+	@ManyToOne(() => Team)
+	@JoinColumn({ name: 'team_id' })
+	team: Team;
 }
