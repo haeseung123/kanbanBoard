@@ -35,9 +35,13 @@ export class TeamsService {
 		return this.invitaionRepository.findOne({ where: { invited_user: { id: options.id } } });
 	}
 
-	// async findTeam(options: FindOptionsWhere<Team>): Promise<Team> {
-	// 	return await this.teamRepository.findOne({ where: options });
-	// }
+	async findUserInTeam(options: FindOptionsWhere<User>): Promise<User> {
+		return this.userRepository.findOne({ where: { id: options.id }, relations: ['team'] });
+	}
+
+	async findTeam(options: FindOptionsWhere<Team>): Promise<Team> {
+		return await this.teamRepository.findOne({ where: options });
+	}
 
 	// 초대된 사용자인 경우 팀을 생성할 수 없음
 	async createTeam(createTeamDto: CreateTeamDto, user: User) {
@@ -67,7 +71,7 @@ export class TeamsService {
 	async inviteUser(inviteUserDto: InviteUserDto, user: User) {
 		if (!user.is_leader) throw new ForbiddenException(TeamsException.TEAM_INVITE_FORBIDDEN);
 
-		const userWithTeam = await this.userRepository.findOne({ where: { id: user.id }, relations: ['team'] });
+		const foundUserInTeam = await this.findUserInTeam(user);
 
 		const { account } = inviteUserDto;
 
@@ -80,7 +84,7 @@ export class TeamsService {
 		const newInvitaion = this.invitaionRepository.create({
 			inviter: user,
 			invited_user: findUser,
-			team: userWithTeam.team,
+			team: foundUserInTeam.team,
 		});
 
 		return await this.invitaionRepository.save(newInvitaion);
