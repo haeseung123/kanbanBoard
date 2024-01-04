@@ -21,27 +21,26 @@ export class ColumnsService {
 		private readonly teamsService: TeamsService,
 	) {}
 
-	async isColumnExist(teamId: number, title: string) {
+	async isColumnExistName(teamId: number, title: string) {
 		// console.log(teamId, title);
 		return this.boardColumnRepository.exist({
 			where: { team: { id: teamId }, title },
 		});
 	}
 
-	async getColumnCount(teamId: number) {
+	private async getColumnCount(teamId: number) {
 		return await this.boardColumnRepository.count({
 			where: { team: { id: teamId } },
 		});
 	}
 
 	async createColumn(teamId: number, user: User, createColumnDto: CreateColumnDto) {
-		// console.log(teamId, user, createColumnDto);
 		const { title } = createColumnDto;
 
 		const foundTeam = await this.teamsService.findTeam({ id: teamId });
 
-		const isColumnExist = await this.isColumnExist(teamId, title);
-		if (isColumnExist) throw new ConflictException(BoardException.COLUMN_ALREADY_EXISTS);
+		const isColumnExistName = await this.isColumnExistName(teamId, title);
+		if (isColumnExistName) throw new ConflictException(BoardException.COLUMN_ALREADY_EXISTS);
 
 		const count = await this.getColumnCount(teamId);
 
@@ -100,6 +99,7 @@ export class ColumnsService {
 				}
 			});
 
+			// await this.boardColumnRepository.save(columns) 변경테스트 해보기~
 			columns.forEach(async (column) => {
 				await this.boardColumnRepository.update(column.id, { order: column.order });
 			});
@@ -120,8 +120,6 @@ export class ColumnsService {
 			.leftJoinAndSelect('ticket.boardColumn', 'column')
 			.where('ticket.board_column_id = :id', { id: column_id })
 			.getOne();
-
-		console.log(hasTickets);
 
 		if (hasTickets !== null) throw new BadRequestException(BoardException.TICKET_EXIST_TO_COLUMN);
 

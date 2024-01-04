@@ -30,4 +30,8 @@ export class BoardException {
 		message: '컬럼에 티켓이 존재하므로 삭제할 수 없습니다.',
 		error: ExceptionObjError.BAD_REQUEST,
 	};
+	static TICKET_NOT_EXISTS: ExceptionObj = {
+		message: '존재하지 않는 티켓입니다.',
+		error: ExceptionObjError.BAD_REQUEST,
+	};
 }

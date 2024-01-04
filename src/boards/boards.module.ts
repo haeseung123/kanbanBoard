@@ -12,10 +12,11 @@ import { UsersService } from 'src/users/users.service';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { ColumnsService } from './columns.service';
+import { TicketsService } from './tickets.service';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([BoardColumn, Ticket, Team, Invitation, User])],
 	controllers: [BoardsController],
-	providers: [BoardsService, TeamsService, UsersService, AuthService, JwtService, ColumnsService],
+	providers: [BoardsService, TeamsService, UsersService, AuthService, JwtService, ColumnsService, TicketsService],
 })
 export class BoardsModule {}

@@ -19,4 +19,7 @@ export class BoardColumn extends BaseEntity {
 	@ManyToOne(() => User)
 	@JoinColumn({ name: 'created_user_id' })
 	created_user: User;
+
+	@OneToMany(() => Ticket, (ticket) => ticket.boardColumn)
+	tickets: Ticket[];
 }
