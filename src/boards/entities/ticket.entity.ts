@@ -27,9 +27,6 @@ export class Ticket extends BaseEntity {
 	due_date: string;
 
 	@Column()
-	assignee: string;
-
-	@Column()
 	order: number;
 
 	@ManyToOne(() => BoardColumn)
@@ -37,6 +34,6 @@ export class Ticket extends BaseEntity {
 	boardColumn: BoardColumn;
 
 	@ManyToOne(() => User)
-	@JoinColumn({ name: 'created_user_id' })
-	created_user: User;
+	@JoinColumn({ name: 'assignee_id' })
+	assignee: User;
 }
