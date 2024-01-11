@@ -43,9 +43,11 @@ export class TeamsService {
 		return await this.teamRepository.findOne({ where: options });
 	}
 
-	// 초대된 사용자인 경우 팀을 생성할 수 없음
 	async createTeam(createTeamDto: CreateTeamDto, user: User) {
 		const { team_name } = createTeamDto;
+
+		const isInvited = await this.invitaionRepository.exist({ where: { invited_user: { id: user.id } } });
+		if (isInvited) throw new ForbiddenException(TeamsException.TEAM_CREATE_FORBIDDEN);
 
 		const isExist = await this.isTeamExist({ team_name });
 		if (isExist) throw new ConflictException(TeamsException.TEAM_NAME_ALREADY_EXISTS);
@@ -66,8 +68,6 @@ export class TeamsService {
 		};
 	}
 
-	// 본인이 본인을 초대하는 경우도 생각해야함
-	// 나 이외의 다른 팀장들일경우도 예외해야함
 	async inviteUser(inviteUserDto: InviteUserDto, user: User) {
 		if (!user.is_leader) throw new ForbiddenException(TeamsException.TEAM_INVITE_FORBIDDEN);
 
@@ -78,16 +78,19 @@ export class TeamsService {
 		const findUser = await this.usersService.findUser({ account });
 		if (!findUser) throw new BadRequestException(UsersException.USER_NOT_EXISTS);
 
+		if (user.id === findUser.id) throw new BadRequestException(TeamsException.UNABLE_INVITE_YOUR_SELF);
+		if (findUser.is_leader) throw new BadRequestException(TeamsException.UNABLE_INVITE_TEAM_LEADER);
+
 		const isExist = await this.isInvitationExist(findUser);
 		if (isExist) throw new ConflictException(TeamsException.ALREADY_INVITED_USER);
 
-		const newInvitaion = this.invitaionRepository.create({
+		const newInvitation = this.invitaionRepository.create({
 			inviter: user,
 			invited_user: findUser,
 			team: foundUserInTeam.team,
 		});
 
-		return await this.invitaionRepository.save(newInvitaion);
+		return await this.invitaionRepository.save(newInvitation);
 	}
 
 	//나중에 거절 로직도 짜기
