@@ -8,6 +8,8 @@ import { CreateTeamDto } from './dtos/create-team.dto';
 import { GetUser } from 'src/global/decorators/get-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { InviteUserDto } from './dtos/invite-user.dto';
+import { ResponseMessage } from 'src/global/decorators/response-key.decorator';
+import { TeamResponseMessage } from './classes/team.response.message';
 
 @ApiTags('팀')
 @Controller('teams')
@@ -18,18 +20,21 @@ export class TeamsController {
 
 	@ApiOperation({ summary: '팀 생성' })
 	@Post('create')
+	@ResponseMessage(TeamResponseMessage.CREATED_TEAM)
 	async create(@Body() createTeamDto: CreateTeamDto, @GetUser() user: User) {
 		return await this.teamsService.createTeam(createTeamDto, user);
 	}
 
 	@ApiOperation({ summary: '팀 초대' })
 	@Post('invite')
+	@ResponseMessage(TeamResponseMessage.INVITED_TEAM)
 	async invite(@Body() inviteUserDto: InviteUserDto, @GetUser() user: User) {
 		return await this.teamsService.inviteUser(inviteUserDto, user);
 	}
 
-	@ApiOperation({ summary: '팀 초대 확인' })
+	@ApiOperation({ summary: '팀 초대 승락' })
 	@Post('accept')
+	@ResponseMessage(TeamResponseMessage.ACCEPTED_TEAM)
 	async accepted(@GetUser() user: User) {
 		return await this.teamsService.acceptInvitaion(user);
 	}
