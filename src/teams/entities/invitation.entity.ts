@@ -13,7 +13,7 @@ export class Invitation extends BaseEntity {
 	})
 	status: InvitationStatus;
 
-	@OneToOne(() => User)
+	@ManyToOne(() => User)
 	@JoinColumn({ name: 'inviter_id' })
 	inviter: User;
 
