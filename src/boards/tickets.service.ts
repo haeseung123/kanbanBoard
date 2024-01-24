@@ -29,8 +29,7 @@ export class TicketsService {
 		});
 	}
 
-	//팀 아이디가 필요없을거같애 왜냐면 컬럼 아이디는 고유의 값이니깐
-	async createTicket(teamId: number, user: User, createTicketDto: CreateTicketDto) {
+	async createTicket(user: User, createTicketDto: CreateTicketDto) {
 		const { column_id, title, tag, due_date, workload } = createTicketDto;
 
 		const column = await this.columnsService.findColumn({ id: column_id });
@@ -57,14 +56,14 @@ export class TicketsService {
 		const isExist = await this.isTicketExist({ id: ticket_id });
 		if (!isExist) throw new BadRequestException(BoardException.TICKET_NOT_EXISTS);
 
-		await this.ticketRepository.update(
+		const result = await this.ticketRepository.update(
 			{ id: ticket_id },
 			{
 				...newInput,
 			},
 		);
 
-		return true;
+		return result.affected ? true : false;
 	}
 
 	async changeTicketOrder(updateTicketOrderDto: UpdateTicketOrderDto) {
@@ -80,44 +79,14 @@ export class TicketsService {
 
 		if (foundTicket.boardColumn.id === column_id) {
 			// 동일한 컬럼내에서의 순서 변경
-			await this.changeTicketOrderInSameColumn(foundTicket, order);
+			const tickets = await this.ticketRepository.find({ where: { boardColumn: { id: column_id } } });
+			await this.columnsService.updateEntityOrder(this.ticketRepository, tickets, ticket_id, order);
 		} else {
 			// 다른 컬럼으로의 이동
 			await this.moveTicketToAnotherColumn(foundTicket, column, order);
 		}
 
 		return;
-	}
-
-	private async changeTicketOrderInSameColumn(ticket: Ticket, newOrder: number) {
-		const { boardColumn, order: oldOrder } = ticket;
-		const columnId = boardColumn.id;
-
-		if (newOrder <= 0) {
-			newOrder = 1;
-		}
-
-		let tickets = await this.ticketRepository.find({ where: { boardColumn: { id: columnId } } });
-
-		const indexToTicket = tickets.findIndex((c) => c.id === ticket.id);
-
-		tickets[indexToTicket].order = newOrder;
-
-		tickets.forEach((t) => {
-			if (t.id !== ticket.id) {
-				if (newOrder > oldOrder) {
-					if (t.order > oldOrder && t.order <= newOrder) {
-						t.order--;
-					}
-				} else {
-					if (t.order < oldOrder && t.order >= newOrder) {
-						t.order++;
-					}
-				}
-			}
-		});
-
-		await this.ticketRepository.save(tickets);
 	}
 
 	private async moveTicketToAnotherColumn(ticket: Ticket, newColumn: BoardColumn, newOrder: number) {
@@ -162,12 +131,34 @@ export class TicketsService {
 		});
 	}
 
+	async findTicket(options: FindOptionsWhere<Ticket>): Promise<Ticket | null> {
+		return await this.ticketRepository.findOne({ where: options });
+	}
+
 	async deleteTicket(deleteTicketDto: DeleteTicketDto) {
 		const { ticket_id } = deleteTicketDto;
 
 		const isExist = await this.isTicketExist({ id: ticket_id });
 		if (!isExist) throw new BadRequestException(BoardException.TICKET_NOT_EXISTS);
 
+		const deletedTicket = await this.findTicket({ id: ticket_id });
+		const deletedOnColumn = deletedTicket.boardColumn;
+		const deletedOrder = deletedTicket.order;
+
 		await this.ticketRepository.delete({ id: ticket_id });
+
+		const remainingTickets = await this.ticketRepository.find({
+			where: {
+				boardColumn: deletedOnColumn,
+			},
+			order: { order: 'ASC' },
+		});
+
+		for (const ticket of remainingTickets) {
+			if (ticket.order > deletedOrder) {
+				ticket.order--;
+				await this.ticketRepository.update(ticket.id, { order: ticket.order });
+			}
+		}
 	}
 }
