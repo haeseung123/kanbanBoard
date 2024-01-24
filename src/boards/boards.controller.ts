@@ -57,7 +57,7 @@ export class BoardsController {
 		return await this.columnsService.createColumn(teamId, user, createColumnDto);
 	}
 
-	@ApiOperation({ summary: '컬럼 타이틀 수정' }) //팀원도 수정할 수 있음
+	@ApiOperation({ summary: '컬럼 타이틀 수정' })
 	@Patch(':teamId/column')
 	@UseGuards(TeamMemberGuard)
 	@ResponseMessage(BoardResponseMessage.UPDATED_COLUMN_TITLE)
@@ -96,19 +96,15 @@ export class BoardsController {
 	@Post(':teamId/ticket')
 	@UseGuards(TeamMemberGuard)
 	@ResponseMessage(BoardResponseMessage.CREATED_TICKET)
-	async createTicket(
-		@Param('teamId', ParseIntPipe) teamId: number,
-		@GetUser() user: User,
-		@Body() createTicketDto: CreateTicketDto,
-	) {
-		return await this.ticketsService.createTicket(teamId, user, createTicketDto);
+	async createTicket(@GetUser() user: User, @Body() createTicketDto: CreateTicketDto) {
+		return await this.ticketsService.createTicket(user, createTicketDto);
 	}
 
 	@ApiOperation({ summary: '티켓 수정' })
 	@Put(':teamId/ticket')
 	@UseGuards(TeamMemberGuard)
 	@ResponseMessage(BoardResponseMessage.UPDATED_TICKET)
-	async updateTicket(@Param('teamId', ParseIntPipe) teamId: number, @Body() updateTicketDto: UpdateTicketDto) {
+	async updateTicket(@Body() updateTicketDto: UpdateTicketDto) {
 		return await this.ticketsService.updateTicket(updateTicketDto);
 	}
 

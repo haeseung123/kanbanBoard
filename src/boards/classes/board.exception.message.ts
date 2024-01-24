@@ -14,6 +14,10 @@ export class BoardException {
 		message: '소속된 팀이 없습니다.',
 		error: ExceptionObjError.FORBIDDEN,
 	};
+	static NOT_TEAMS_COLUMN: ExceptionObj = {
+		message: '소속된 팀의 컬럼이 아닙니다.',
+		error: ExceptionObjError.BAD_REQUEST,
+	};
 	static COLUMN_ALREADY_EXISTS: ExceptionObj = {
 		message: '이미 존재하는 컬럼입니다.',
 		error: ExceptionObjError.CONFLICT,

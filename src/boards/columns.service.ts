@@ -1,7 +1,7 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardColumn } from './entities/boardColumn.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
 import { Ticket } from './entities/ticket.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateColumnDto } from './dtos/create-column.dto';
@@ -10,6 +10,7 @@ import { UpdateColumnDto } from './dtos/update-column.dto';
 import { UpdateColumnOrderDto } from './dtos/update-column-order.dto';
 import { BoardException } from './classes/board.exception.message';
 import { DeleteColumnDto } from './dtos/delete-column.dto';
+import { Team } from 'src/teams/entities/team.entity';
 
 @Injectable()
 export class ColumnsService {
@@ -21,8 +22,7 @@ export class ColumnsService {
 		private readonly teamsService: TeamsService,
 	) {}
 
-	async isColumnExistName(teamId: number, title: string) {
-		// console.log(teamId, title);
+	private async isColumnExistName(teamId: number, title: string) {
 		return this.boardColumnRepository.exist({
 			where: { team: { id: teamId }, title },
 		});
@@ -55,74 +55,99 @@ export class ColumnsService {
 	}
 
 	async findColumn(options: FindOptionsWhere<BoardColumn>): Promise<BoardColumn | null> {
-		return await this.boardColumnRepository.findOne({ where: options });
+		return await this.boardColumnRepository.findOne({ where: options, relations: ['team'] });
 	}
-	//팀의 컬럼인지 여부를 확인해야함, 나중에 가드로 빼도 될듯
-	// 변경된 값을 return
-	async updateColumn(teamId: number, updateColumnDto: UpdateColumnDto) {
-		const { column_id, title } = updateColumnDto;
 
-		const foundColumn = await this.findColumn({ id: column_id });
+	private async validateColumnAndTeam(columnId: number, teamId: number) {
+		const foundColumn = await this.findColumn({ id: columnId });
 
 		if (!foundColumn) throw new BadRequestException(BoardException.COLUMN_NOT_EXISTS);
+		if (foundColumn.team.id !== teamId) throw new BadRequestException(BoardException.NOT_TEAMS_COLUMN);
 
-		await this.boardColumnRepository.update(foundColumn.id, { title: title });
 		return foundColumn;
 	}
 
-	// 입력값이 만일 현재 컬럼 순서와 같으면 변화없음 order가 0이 아니여야함 이것은 dto에서 검증하는것으로 하자
+	async updateColumn(teamId: number, updateColumnDto: UpdateColumnDto) {
+		const { column_id, title } = updateColumnDto;
+
+		const column = await this.validateColumnAndTeam(column_id, teamId);
+
+		const result = await this.boardColumnRepository.update(column.id, { title: title });
+		return result.affected ? true : false;
+	}
+
 	async changeColumnOrder(teamId: number, updateColumnOrderDto: UpdateColumnOrderDto) {
 		const { column_id, order } = updateColumnOrderDto;
 
-		let columns = await this.boardColumnRepository.find({ where: { team: { id: teamId } } });
+		await this.validateColumnAndTeam(column_id, teamId);
 
-		// if(!foundColumn) throw new BadRequestException('컬럼존재 x')
-		const indexToColumn = columns.findIndex((c) => c.id === column_id);
+		const columns = await this.boardColumnRepository.find({ where: { team: { id: teamId } } });
 
-		if (indexToColumn !== -1) {
-			const oldOrder = columns[indexToColumn].order;
-			if (oldOrder === order) throw new BadRequestException(BoardException.SAME_COLUMN_VALUE);
-
-			columns[indexToColumn].order = order;
-
-			columns.forEach((column) => {
-				if (column.id !== column_id) {
-					if (order > oldOrder) {
-						if (column.order > oldOrder && column.order <= order) {
-							column.order--;
-						}
-					} else {
-						if (column.order < oldOrder && column.order >= order) {
-							column.order++;
-						}
-					}
-				}
-			});
-
-			// await this.boardColumnRepository.save(columns) 변경테스트 해보기~
-			columns.forEach(async (column) => {
-				await this.boardColumnRepository.update(column.id, { order: column.order });
-			});
-
-			columns.sort((a, b) => a.order - b.order);
-		}
-
-		return columns;
+		return await this.updateEntityOrder(this.boardColumnRepository, columns, column_id, order);
 	}
 
 	async deleteColumn(teamId: number, deleteColumnDto: DeleteColumnDto) {
-		//팀의 컬럼이 맞는지 검증하기
-
 		const { column_id } = deleteColumnDto;
 
-		const hasTickets = await this.ticketRepository
-			.createQueryBuilder('ticket')
-			.leftJoinAndSelect('ticket.boardColumn', 'column')
-			.where('ticket.board_column_id = :id', { id: column_id })
-			.getOne();
+		await this.validateColumnAndTeam(column_id, teamId);
+
+		const deletedColumn = await this.findColumn({ id: column_id });
+		const deletedOrder = deletedColumn.order;
+
+		const hasTickets = await this.ticketRepository.findOne({
+			where: {
+				boardColumn: { id: column_id },
+			},
+		});
 
 		if (hasTickets !== null) throw new BadRequestException(BoardException.TICKET_EXIST_TO_COLUMN);
 
 		await this.boardColumnRepository.delete({ id: column_id });
+
+		const remainingColumns = await this.boardColumnRepository.find({
+			where: {
+				team: { id: teamId },
+			},
+			order: { order: 'ASC' },
+		});
+
+		for (const column of remainingColumns) {
+			if (column.order > deletedOrder) {
+				column.order--;
+				await this.boardColumnRepository.update(column.id, { order: column.order });
+			}
+		}
+	}
+
+	async updateEntityOrder<T extends { id: number; order: number }>(
+		repository: Repository<T>,
+		entities: (DeepPartial<T> & T)[],
+		entityId: number,
+		newOrder: number,
+	) {
+		if (newOrder <= 0) {
+			newOrder = 1;
+		}
+
+		const indexToEntity = entities.findIndex((e) => e.id === entityId);
+		const { order: oldOrder } = entities[indexToEntity];
+
+		entities[indexToEntity].order = newOrder;
+
+		entities.forEach((entity) => {
+			if (entity.id !== entityId) {
+				if (newOrder > oldOrder) {
+					if (entity.order > oldOrder && entity.order <= newOrder) {
+						entity.order--;
+					}
+				} else {
+					if (entity.order < oldOrder && entity.order >= newOrder) {
+						entity.order++;
+					}
+				}
+			}
+		});
+
+		return await repository.save(entities);
 	}
 }
