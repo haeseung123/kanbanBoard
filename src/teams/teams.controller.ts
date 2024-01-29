@@ -32,7 +32,7 @@ export class TeamsController {
 		return await this.teamsService.inviteUser(inviteUserDto, user);
 	}
 
-	@ApiOperation({ summary: '팀 초대 승락' })
+	@ApiOperation({ summary: '팀 초대 승낙' })
 	@Post('accept')
 	@ResponseMessage(TeamResponseMessage.ACCEPTED_TEAM)
 	async accepted(@GetUser() user: User) {
