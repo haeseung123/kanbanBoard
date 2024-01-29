@@ -69,24 +69,23 @@ export class TicketsService {
 	async changeTicketOrder(updateTicketOrderDto: UpdateTicketOrderDto) {
 		const { ticket_id, column_id, order } = updateTicketOrderDto;
 
+		const column = await this.columnsService.findColumn({ id: column_id });
+		if (!column) throw new BadRequestException(BoardException.COLUMN_NOT_EXISTS);
+
 		const foundTicket = await this.ticketRepository.findOne({
 			where: { id: ticket_id },
 			relations: ['boardColumn'],
 		});
-
-		const column = await this.columnsService.findColumn({ id: column_id });
-		if (!column) throw new BadRequestException(BoardException.COLUMN_NOT_EXISTS);
+		if (!foundTicket) throw new BadRequestException(BoardException.TICKET_NOT_EXISTS);
 
 		if (foundTicket.boardColumn.id === column_id) {
 			// 동일한 컬럼내에서의 순서 변경
 			const tickets = await this.ticketRepository.find({ where: { boardColumn: { id: column_id } } });
-			await this.columnsService.updateEntityOrder(this.ticketRepository, tickets, ticket_id, order);
+			return await this.columnsService.updateEntityOrder(this.ticketRepository, tickets, ticket_id, order);
 		} else {
 			// 다른 컬럼으로의 이동
-			await this.moveTicketToAnotherColumn(foundTicket, column, order);
+			return await this.moveTicketToAnotherColumn(foundTicket, column, order);
 		}
-
-		return;
 	}
 
 	private async moveTicketToAnotherColumn(ticket: Ticket, newColumn: BoardColumn, newOrder: number) {
@@ -125,6 +124,7 @@ export class TicketsService {
 
 		await this.ticketRepository.save(ticketsInOldColumn);
 
+		// findOne으로 조회해서 save()로 컬럼 아이디 변경하기
 		await this.ticketRepository.update(ticket.id, {
 			boardColumn: { id: newColumn.id },
 			order: newOrder,
