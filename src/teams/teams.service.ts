@@ -52,19 +52,20 @@ export class TeamsService {
 		const isExist = await this.isTeamExist({ team_name });
 		if (isExist) throw new ConflictException(TeamsException.TEAM_NAME_ALREADY_EXISTS);
 
+		if (user.is_leader) throw new ConflictException(TeamsException.TEAM_ALREADY_CREATED);
+
 		const newTeam = this.teamRepository.create({
 			team_name,
 		});
 
 		const savedTeam = await this.teamRepository.save(newTeam);
 
-		if (user.is_leader) throw new ConflictException(TeamsException.TEAM_ALREADY_CREATED);
-
-		await this.userRepository.update({ id: user.id }, { is_leader: true, team: savedTeam });
+		const updatedUser = await this.userRepository.update({ id: user.id }, { is_leader: true, team: savedTeam });
+		const isLeader = updatedUser.affected ? true : false;
 
 		return {
 			savedTeam,
-			user,
+			isLeader: isLeader,
 		};
 	}
 
@@ -105,13 +106,18 @@ export class TeamsService {
 			throw new BadRequestException(TeamsException.ALREADY_ACCEPTED);
 		}
 
-		await this.invitaionRepository.update({ id: foundInvitaion.id }, { status: InvitationStatus.ACCEPTED });
+		const updatedInvitaion = await this.invitaionRepository.update(
+			{ id: foundInvitaion.id },
+			{ status: InvitationStatus.ACCEPTED },
+		);
+		const acceptedInvitation = updatedInvitaion.affected ? true : false;
 
 		await this.userRepository.update({ id: user.id }, { team: foundInvitaion.team });
 
 		return {
 			user,
-			foundInvitaion,
+			team: foundInvitaion.team,
+			acceptedInvitation: acceptedInvitation,
 		};
 	}
 }
