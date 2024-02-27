@@ -4,7 +4,7 @@ services:
         build:
             context: .
             dockerfile: DockerFile
-        image: kanban-server
+        image: haeseung/kanban-server
         volumes:
             - ./src:/api/src
         restart: always
