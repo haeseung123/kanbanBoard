@@ -58,13 +58,13 @@ _본 이미지는 이해를 돕기 위한 예시이며 프로젝트와 무관한
 
 ## 프로젝트 아키텍처
 
-#### 인프라 아키텍처
+#### 시스템 아키텍처
 
-<img width="788" alt="스크린샷 2024-02-15 오후 5 22 21" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/deb0a8a2-0efc-4c22-b39c-678700a2e24c">
+<img width="848" alt="스크린샷 2024-03-06 오후 4 32 07" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/c349cdef-c2e0-4589-a477-c04f854af825">
 
 #### 백엔드 CI/CD
 
-<img width="907" alt="스크린샷 2024-02-15 오후 5 22 40" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/5b469635-a77c-47e6-8f4a-6a54615228cb">
+<img width="844" alt="스크린샷 2024-03-06 오후 4 27 12" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/fa6e2e3d-13c9-4336-bd98-d9be83855132">
 
 ## ERD
 
