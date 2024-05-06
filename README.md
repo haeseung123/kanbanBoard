@@ -62,13 +62,15 @@ _본 이미지는 이해를 돕기 위한 예시이며 프로젝트와 무관한
 
 [칸반보드 인프라 개선기](https://velog.io/@showui96/DevOps-%EC%B9%B8%EB%B0%98%EB%B3%B4%EB%93%9C-%EC%9D%B8%ED%94%84%EB%9D%BC-%EA%B0%9C%EC%84%A0%EA%B8%B0-1%ED%83%84)
 
-#### 시스템 아키텍처
+<img width="1673" alt="image" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/4d74ad0c-040e-4696-986f-9e882a2783a5">
 
-<img width="848" alt="스크린샷 2024-03-06 오후 4 32 07" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/c349cdef-c2e0-4589-a477-c04f854af825">
+### 배포결과
 
-#### 백엔드 CI/CD
+<img width="1054" alt="image" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/a0dfe6f9-0b3a-4c8c-bdaa-5af5b4a9c7b3">
 
-<img width="844" alt="스크린샷 2024-03-06 오후 4 27 12" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/fa6e2e3d-13c9-4336-bd98-d9be83855132">
+_API 서버만 배포한 것으로 기본적인 메인화면이 없으나 위의 사진으로 서버가 동작하는 것을 확인할 수 있습니다._
+
+<br>
 
 ## ERD
 
