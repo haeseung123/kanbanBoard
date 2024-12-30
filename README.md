@@ -2,6 +2,46 @@
 
 프로젝트 및 작업 관리를 위한 직관적이고 유연한 도구로, 팀 간 협업과 업무 효율성을 향상 시키는데 사용됩니다
 
+## Skills
+
+#### Back-End
+
+<img src="https://img.shields.io/badge/Node.js-v 18-339933">&nbsp;
+<img src="https://img.shields.io/badge/Nest.js-v 10.2-E0234E">&nbsp;
+<img src="https://img.shields.io/badge/TypeScript-v 5.0-3178C6"><br>
+<img src="https://img.shields.io/badge/TypeORM-v 0.3-fcad03">&nbsp;
+<img src="https://img.shields.io/badge/postgreSQL-v 16.1-4169E1">&nbsp;
+
+#### DevOps
+
+<img src="https://img.shields.io/badge/AWS-EC2-FF9900">&nbsp;
+<img src="https://img.shields.io/badge/Docker-v 24.0.6-2496ED">&nbsp;
+<img src="https://img.shields.io/badge/Kubernetes-v 1.30.0-326CE5">&nbsp;
+<img src="https://img.shields.io/badge/Jenkins-v 2.60-D24939">&nbsp;
+<img src="https://img.shields.io/badge/Argo-v 2.13.2-EF7B4D">&nbsp;
+<img src="https://img.shields.io/badge/Ubuntu-v 22.04-E95420">&nbsp;
+
+<br>
+
+## 프로젝트 아키텍처
+
+컨테이너 기반의 기본 인프라에서부터 최종적으로 쿠버네티스 도입과 GitOps 기반의 배포 파이프라인까지 효율적인 배포와 인프라 관리를 목표로 점진적으로 개선해왔습니다.
+
+<img width="659" alt="스크린샷 2024-12-29 오후 6 00 14" src="https://github.com/user-attachments/assets/4eaab6e3-952e-4200-9b70-c59463674b54" />
+
+### 관련 글 링크
+
+-   [칸반보드 인프라 개선기](https://velog.io/@showui96/DevOps-%EC%B9%B8%EB%B0%98%EB%B3%B4%EB%93%9C-%EC%9D%B8%ED%94%84%EB%9D%BC-%EA%B0%9C%EC%84%A0%EA%B8%B0-1%ED%83%84)
+    → 초기 컨테이너화부터 칸반보드를 활용한 개선 작업 기록
+
+-   [쿠버네티스 도입과 CI/CD에 대해서](https://velog.io/@showui96/DevOps-%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EB%8F%84%EC%9E%85%EA%B3%BC-CICD%EC%97%90-%EB%8C%80%ED%95%B4%EC%84%9C)
+    → 쿠버네티스 환경 및 CI/CD 워크플로우 구성 과정
+
+-   [GitOps 기반의 프로젝트 CI/CD 구축하기](https://velog.io/@showui96/DevOps-GitOps-%EA%B8%B0%EB%B0%98%EC%9D%98-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-CICD-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0)
+    → GitOps 기반의 배포 파이프라인 최적화 과정
+
+<br>
+
 ## 주요 기능
 
 ### 팀
@@ -35,40 +75,6 @@ _본 이미지는 이해를 돕기 위한 예시이며 프로젝트와 무관한
     -   `작업분량` / `담당자`
 
 -   컬럼 내에서의 이동과 다른 컬럼으로의 이동이 가능합니다.
-
-## Skills
-
-#### Back-End
-
-<img src="https://img.shields.io/badge/Node.js-v 18-339933">&nbsp;
-<img src="https://img.shields.io/badge/Nest.js-v 10.2-E0234E">&nbsp;
-<img src="https://img.shields.io/badge/TypeScript-v 5.0-3178C6"><br>
-<img src="https://img.shields.io/badge/TypeORM-v 0.3-fcad03">&nbsp;
-<img src="https://img.shields.io/badge/postgreSQL-v 16.1-4169E1">&nbsp;
-
-#### DevOps
-
-<img src="https://img.shields.io/badge/AWS-EC2-FF9900">&nbsp;
-<img src="https://img.shields.io/badge/AWS-RDS-527FFF">&nbsp;
-<img src="https://img.shields.io/badge/Docker-v 24.0.6-2496ED">&nbsp;
-<img src="https://img.shields.io/badge/Jenkins-v 2.60-D24939">&nbsp;
-<img src="https://img.shields.io/badge/Ubuntu-v 22.04-E95420">&nbsp;
-
-<br>
-
-## 프로젝트 아키텍처
-
-첫 배포부터 최종에 이르기까지 개선해나가는 과정을 정리한 링크입니다.
-
-[칸반보드 인프라 개선기](https://velog.io/@showui96/DevOps-%EC%B9%B8%EB%B0%98%EB%B3%B4%EB%93%9C-%EC%9D%B8%ED%94%84%EB%9D%BC-%EA%B0%9C%EC%84%A0%EA%B8%B0-1%ED%83%84)
-
-<img width="1673" alt="image" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/4d74ad0c-040e-4696-986f-9e882a2783a5">
-
-### 배포결과
-
-<img width="1054" alt="image" src="https://github.com/haeseung123/kanbanBoard/assets/106800437/a0dfe6f9-0b3a-4c8c-bdaa-5af5b4a9c7b3">
-
-_API 서버만 배포한 것으로 기본적인 메인화면이 없으나 위의 사진으로 서버가 동작하는 것을 확인할 수 있습니다._
 
 <br>
 
