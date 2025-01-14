@@ -29,16 +29,44 @@
 
 <img width="659" alt="스크린샷 2024-12-29 오후 6 00 14" src="https://github.com/user-attachments/assets/4eaab6e3-952e-4200-9b70-c59463674b54" />
 
+```
+1. 소스 코드 변경사항 Push
+
+2. Jenkins CI 파이프라인 동작
+Webhook을 통해 Jenkins가 자동으로 CI 작업을 실행하며 주요 단계는 다음과 같다.
+
+- Docker Image Build
+- Docker Registry Push
+- K8S Manifests Update: 별도의 Manifest Repository에서 Kustomize 관련 YAML 파일을 업데이트하고 Push
+
+3. ArgoCD를 통한 배포
+ArgoCD가 Manifest Repository의 변경 사항을 감지하고 이를 바탕으로 쿠버네티스 클러스터에 자동으로 배포한다.
+
+```
+
+-   Manifest Repository : https://github.com/haeseung123/k8s_cicd_prac
+
+<br>
+
 ### 관련 글 링크
 
--   [칸반보드 인프라 개선기](https://velog.io/@showui96/DevOps-%EC%B9%B8%EB%B0%98%EB%B3%B4%EB%93%9C-%EC%9D%B8%ED%94%84%EB%9D%BC-%EA%B0%9C%EC%84%A0%EA%B8%B0-1%ED%83%84)
-    → 초기 컨테이너화부터 칸반보드를 활용한 개선 작업 기록
+#### [칸반보드 인프라 개선기](https://velog.io/@showui96/DevOps-%EC%B9%B8%EB%B0%98%EB%B3%B4%EB%93%9C-%EC%9D%B8%ED%94%84%EB%9D%BC-%EA%B0%9C%EC%84%A0%EA%B8%B0-1%ED%83%84)
 
--   [쿠버네티스 도입과 CI/CD에 대해서](https://velog.io/@showui96/DevOps-%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EB%8F%84%EC%9E%85%EA%B3%BC-CICD%EC%97%90-%EB%8C%80%ED%95%B4%EC%84%9C)
-    → 쿠버네티스 환경 및 CI/CD 워크플로우 구성 과정
+초기 단순 컨테이너 아키텍처에서 ECS에 이르기까지의 개선 작업
 
--   [GitOps 기반의 프로젝트 CI/CD 구축하기](https://velog.io/@showui96/DevOps-GitOps-%EA%B8%B0%EB%B0%98%EC%9D%98-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-CICD-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0)
-    → GitOps 기반의 배포 파이프라인 최적화 과정
+```
+1. Jenkins를 활용한 CI/CD 구축
+2. Ansible을 도입하여 서버 안정성 높이기
+3. 완전 관리형 서비스 AWS ECS에 배포하기
+```
+
+#### [쿠버네티스 도입과 CI/CD에 대해서](https://velog.io/@showui96/DevOps-%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EB%8F%84%EC%9E%85%EA%B3%BC-CICD%EC%97%90-%EB%8C%80%ED%95%B4%EC%84%9C)
+
+쿠버네티스 환경 및 CI/CD 워크플로우 구성
+
+#### [GitOps 기반의 프로젝트 CI/CD 구축하기](https://velog.io/@showui96/DevOps-GitOps-%EA%B8%B0%EB%B0%98%EC%9D%98-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-CICD-%EA%B5%AC%EC%B6%95%ED%95%98%EA%B8%B0)
+
+GitOps 기반의 배포 파이프라인 구축 및 배포 과정
 
 <br>
 
@@ -84,6 +112,8 @@ _본 이미지는 이해를 돕기 위한 예시이며 프로젝트와 무관한
 
 -   각 팀은 고유한 칸반보드를 가질 수 있으며 다양한 팀 및 프로젝트에 맞게 구성될 수 있도록 설계하였습니다.
 -   사용자의 권한을 관리하고 제어하는 데 용이할 수 있도록 `is_leader` 컬럼을 `User`테이블에 저장하여 데이터베이스의 일관성을 유지하고 사용자 정보와 관련된 역할 및 권한을 단일 위치에서 관리하고 쿼리할 수 있도록 하였습니다.
+
+<br>
 
 ## API 명세
 
